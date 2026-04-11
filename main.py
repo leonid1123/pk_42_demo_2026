@@ -33,16 +33,21 @@ class MainWindow(QMainWindow):
     def user_login(self):
         inp_login = self.login_ent.text()
         inp_pass = self.pass_ent.text()
-        sql = '''SELECT `ФИО`, `Роль сотрудника` FROM user_import 
-        WHERE password=%s AND login=%s'''
+        sql = '''SELECT `Роль сотрудника`, `ФИО` FROM `user_import` 
+        WHERE `Пароль`=%s AND `Логин`=%s'''
         self.my_db.cur.execute(sql,(inp_pass,inp_login))
         ans = self.my_db.cur.fetchone()
+        print(ans)
         if ans:
             self.okno2 = Okno2()
+            self.okno2.role = ans[1]
+            self.okno2.fio = ans[0]
             self.okno2.show()
 
     def guest_login(self):
         self.okno2 = Okno2()
+        self.okno2.fio = 'ГОСТЬ'
+        self.okno2.role = 'гость'
         self.okno2.show()
 
 
