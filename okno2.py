@@ -1,7 +1,10 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QListWidget, QPushButton, QComboBox, QLineEdit
+from PyQt6.QtWidgets import (QApplication, QWidget,
+                             QGridLayout, QListWidget,
+                             QPushButton, QComboBox,
+                             QLineEdit)
 from db_hamdler import DB_hamdler
-
+from okno3 import Okno3
 
 class Okno2(QWidget):
     def __init__(self):
@@ -13,6 +16,7 @@ class Okno2(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
         self.all_goods = QListWidget()
+        self.all_goods.doubleClicked.connect(self.edit_tovar)
         sort_up = QPushButton("По возрастанию")
         sort_up.clicked.connect(self.sort_up_slot)
         sort_down = QPushButton("По убыванию")
@@ -27,15 +31,28 @@ class Okno2(QWidget):
 
         self.search = QLineEdit()
         self.search.textChanged.connect(self.search_slot)
+        add_btn = QPushButton('Добавить товар')#тут
+        add_btn.clicked.connect(self.add_win)#тут
         layout.addWidget(self.all_goods,0,0,1,2)
         layout.addWidget(sort_up,1,0)
         layout.addWidget(sort_down,1,1)
         layout.addWidget(self.filter,2,0,1,2)
         layout.addWidget(self.search,3,0,1,2)
+        layout.addWidget(add_btn, 4, 0, 1, 2)#тут
         self.my_db.cur.execute('SELECT * FROM tovar')
         ans = self.my_db.cur.fetchall()
         for item in ans:
-            self.all_goods.addItem(f'{item[1]} {item[2]} {item[3]} {item[4]}')
+            self.all_goods.addItem(f'{item[0]}#{item[1]}#{item[2]}#{item[3]}')
+
+    def edit_tovar(self):
+        item = self.all_goods.currentItem().text()
+        all_item_info = item.split('#')
+        self.win3 = Okno3(all_item_info)
+        self.win3.show()
+
+    def add_win(self):
+        self.win3 = Okno3(None)
+        self.win3.show()
 
     def sort_up_slot(self):
         if self.role in ['Менеджер', 'Администратор']:
